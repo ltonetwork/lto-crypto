@@ -1,0 +1,28 @@
+{
+  "name": "@lto-network/lto-crypto",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc; cp src/libs/*.d.ts dist/libs;cp src/libs/*.js dist/libs",
+    "prepublishOnly": "npm run test;npm run build",
+    "test": "jest"
+  },
+  "author": "Sven Stam",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/legalthings/lto-crypto.git"
+  },
+  "dependencies": {
+    "@types/crypto-js": "^3.1.43",
+    "crypto-js": "^3.1.9-1",
+    "tweetnacl": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^10.9.4",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.1",
+    "typescript": "^3.0.3"
+  }
+}
