@@ -101,9 +101,9 @@ export interface PrivateKey {
 
 export type KeyPair = PublicKey & PrivateKey
 
-export const keyPair = (seed: string): KeyPair => {
+export const keyPair = (seed: string, nonce: number = 0): KeyPair => {
   const seedBytes = stringToUint8Array(seed);
-  const seedHash = buildSeedHash(seedBytes);
+  const seedHash = buildSeedHash(seedBytes, nonce);
   const keys = nacl.sign.keyPair.fromSeed(seedHash);
   return {
     private: base58.encode(keys.secretKey),
@@ -111,15 +111,15 @@ export const keyPair = (seed: string): KeyPair => {
   }
 };
 
-export const publicKey = (seed: string): string =>
+export const publicKey = (seed: string, nonce: number = 0): string =>
   keyPair(seed).public;
 
-export const privateKey = (seed: string): string =>
+export const privateKey = (seed: string, nonce: number = 0): string =>
   keyPair(seed).private;
 
-export const address = (keyOrSeed: KeyPair | PublicKey | string, chainId: string = 'L'): string =>
+export const address = (keyOrSeed: KeyPair | PublicKey | string, chainId: string = 'L', nonce: number = 0): string =>
   typeof keyOrSeed === 'string' ?
-    address(keyPair(keyOrSeed), chainId) :
+    address(keyPair(keyOrSeed, nonce), chainId) :
     buildAddress(base58.decode(keyOrSeed.public), chainId);
 
 export const signBytes = (bytes: Uint8Array, seed: string): string =>

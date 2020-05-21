@@ -12,7 +12,13 @@ import {
 const seed = '1f98af466da54014bdc08bfbaaaf3c67';
 
 test('address', () =>
-  expect(address(seed)).toBe('3JhHfA9kxKE37HuBVnzK9ZMSL5xzD8oN9nD')
+  expect(address(seed)).toBe('3JhHfA9kxKE37HuBVnzK9ZMSL5xzD8oN9nD');
+  expect(address(seed, 'L', 1)).toBe('3JtVW6MW7wWpVAMLcVPrwwtA7C9rGvzkPQN');
+);
+
+test('address testnet', () =>
+  expect(address(seed, 'T')).toBe('3MuzV329Fzfk7qNJBzLyhSMcd813kuH32c3');
+  expect(address(seed, 'T', 1)).toBe('3N7CKyDtRcxXVhpTJgkXVptLQEBupfH8xWD');
 );
 
 test('keyPair', () =>
