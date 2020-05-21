@@ -7,9 +7,11 @@ import {
   verifySignature,
   base58encode,
   base58decode,
+  keyPairFromSeedHash,
 } from '../src'
 
 const seed = '1f98af466da54014bdc08bfbaaaf3c67';
+const seedHash = '7eUDZzhroaFfBz8QDbSdCAh6BRAds5a5V7QPfR8gJTWw';
 
 test('address', () =>
   expect(address(seed)).toBe('3JhHfA9kxKE37HuBVnzK9ZMSL5xzD8oN9nD')
@@ -17,6 +19,13 @@ test('address', () =>
 
 test('keyPair', () =>
   expect(keyPair(seed)).toEqual({
+    public: '94cXghv1RRwmEjDM5BS88euGt8mUR1wGmhw4BdakmrYT',
+    private: '2c8zS9dasxdrqLXjooujeDwME1nrGcNVMDJaqfVGyzidUqdVow7yt2Pu5B7L8Lg3dt9Ci89rtK6jyHjPYBMT6fTH'
+  })
+);
+
+test('keyPairFromSeedHash', () =>
+  expect(keyPairFromSeedHash(seedHash)).toEqual({
     public: '94cXghv1RRwmEjDM5BS88euGt8mUR1wGmhw4BdakmrYT',
     private: '2c8zS9dasxdrqLXjooujeDwME1nrGcNVMDJaqfVGyzidUqdVow7yt2Pu5B7L8Lg3dt9Ci89rtK6jyHjPYBMT6fTH'
   })

@@ -101,6 +101,15 @@ export interface PrivateKey {
 
 export type KeyPair = PublicKey & PrivateKey
 
+export const keyPairFromSeedHash = (seedHash: string): KeyPair => {
+  const bytes = sha256(base58.decode(seedHash));
+  const keys = nacl.sign.keyPair.fromSeed(bytes);
+  return {
+    private: base58.encode(keys.secretKey),
+    public: base58.encode(keys.publicKey)
+  }
+}
+
 export const keyPair = (seed: string): KeyPair => {
   const seedBytes = stringToUint8Array(seed);
   const seedHash = buildSeedHash(seedBytes);
