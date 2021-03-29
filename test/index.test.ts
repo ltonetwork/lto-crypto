@@ -6,7 +6,9 @@ import {
   signBytes,
   verifySignature,
   base58encode,
-  base58decode, chainIdOf, derivedAddress,
+  base58decode,
+  chainIdOf,
+  derivedAddress,
 } from '../src'
 
 const seed = '1f98af466da54014bdc08bfbaaaf3c67';
