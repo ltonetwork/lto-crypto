@@ -20,6 +20,14 @@ export function buildAddress(publicKeyBytes: Uint8Array, chainId: string = 'L'):
   return base58.encode(concat(rawAddress, addressHash))
 }
 
+export function buildDerivedAddress(publicKeyBytes: Uint8Array, secret: Uint8Array, chainId: string = 'L'): string {
+  const prefix = [1, chainId.charCodeAt(0)];
+  const publicKeyHashPart = hashChainHmac(publicKeyBytes, secret).slice(0, 20);
+  const rawAddress = concat(prefix, publicKeyHashPart);
+  const addressHash = Uint8Array.from(hashChain(rawAddress).slice(0, 4));
+  return base58.encode(concat(rawAddress, addressHash))
+}
+
 export function buildSeedHash(seedBytes: Uint8Array, nonce?: number): Uint8Array {
   const nonceArray = [0,0,0,0];
   if (nonce && nonce > 0){
@@ -49,8 +57,7 @@ function wordArrayToByteArrayEx(wordArray: any) {
 
   let u8 = new Uint8Array(sigBytes);
   for (let i = 0; i < sigBytes; i++) {
-    let byte = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
-    u8[i] = byte
+    u8[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
   }
 
   return u8
@@ -71,7 +78,7 @@ export const PRIVATE_KEY_LENGTH = 64;
 export const SIGNATURE_LENGTH = 64;
 
 export function blake2b(input: Uint8Array): Uint8Array {
-  return blake.blake2b(input, null, 32)
+  return blake.blake2b(input, null, 32);
 }
 
 export function sha256(input: Uint8Array): Uint8Array {
@@ -81,8 +88,20 @@ export function sha256(input: Uint8Array): Uint8Array {
   return wordArrayToByteArrayEx(resultWordArray)
 }
 
+export function sha256Hmac(input: Uint8Array, secret: Uint8Array): Uint8Array {
+  const wordArray = byteArrayToWordArrayEx(input);
+  const secretWordArray = byteArrayToWordArrayEx(secret);
+  const resultWordArray = CryptoJS.HmacSHA256(wordArray, secretWordArray);
+
+  return wordArrayToByteArrayEx(resultWordArray)
+}
+
 function hashChain(input: Uint8Array): Uint8Array {
-  return Uint8Array.from(sha256(blake2b(input)))
+  return Uint8Array.from(sha256(blake2b(input)));
+}
+
+function hashChainHmac(input: Uint8Array, secret: Uint8Array): Uint8Array {
+  return Uint8Array.from(sha256Hmac(blake2b(input), secret));
 }
 
 export const base58encode = (input: Uint8Array): string =>
@@ -90,6 +109,9 @@ export const base58encode = (input: Uint8Array): string =>
 
 export const base58decode = (input: string): Uint8Array =>
   base58.decode(input);
+
+export const chainIdOf = (address: string): string =>
+  String.fromCharCode(base58.decode(address)[1]);
 
 export interface PublicKey {
   public: string
@@ -121,6 +143,9 @@ export const address = (keyOrSeed: KeyPair | PublicKey | string, chainId: string
   typeof keyOrSeed === 'string' ?
     address(keyPair(keyOrSeed, nonce), chainId) :
     buildAddress(base58.decode(keyOrSeed.public), chainId);
+
+export const derivedAddress = (key: KeyPair | PublicKey, uniqueId: string, chainId: string = 'L'): string =>
+  buildDerivedAddress(base58.decode(key.public), base58.decode(uniqueId), chainId);
 
 export const signBytes = (bytes: Uint8Array, seed: string): string =>
   signWithPrivateKey(bytes, privateKey(seed));
