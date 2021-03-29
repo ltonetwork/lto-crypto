@@ -153,7 +153,7 @@ export const address = (keyOrSeed: KeyPair | PublicKey | string, chainId: string
     address(keyPair(keyOrSeed, nonce), chainId) :
     buildAddress(base58.decode(keyOrSeed.public), chainId);
 
-export const derivedAddress = (key: KeyPair | PublicKey, uniqueId: string, chainId: string = 'L'): string =>
+export const deriveAddress = (key: KeyPair | PublicKey, uniqueId: string, chainId: string = 'L'): string =>
   buildDerivedAddress(base58.decode(key.public), base58.decode(uniqueId), chainId);
 
 export const signBytes = (bytes: Uint8Array, seed: string): string =>

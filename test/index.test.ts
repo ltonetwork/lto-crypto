@@ -9,7 +9,7 @@ import {
   base58decode,
   keyPairFromSeedHash,
   chainIdOf,
-  derivedAddress,
+  deriveAddress,
 } from '../src'
 
 const seed = '1f98af466da54014bdc08bfbaaaf3c67';
@@ -72,15 +72,15 @@ test('chainIdOf', () => {
   expect(chainIdOf('3MuzV329Fzfk7qNJBzLyhSMcd813kuH32c3')).toBe('T');
 });
 
-test('derivedAddress', () => {
-  expect(derivedAddress(
+test('deriveAddress', () => {
+  expect(deriveAddress(
     {public: '94cXghv1RRwmEjDM5BS88euGt8mUR1wGmhw4BdakmrYT'},
     '62K'
   )).toBe('3JrfUdbJ1Z15dgTjZ4knjteWjJi3WXdg8YD');
 });
 
-test('derivedAddress', () => {
-  expect(derivedAddress(
+test('deriveAddress', () => {
+  expect(deriveAddress(
     {public: '94cXghv1RRwmEjDM5BS88euGt8mUR1wGmhw4BdakmrYT'},
     '62K',
     'T'
