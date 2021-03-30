@@ -1,6 +1,6 @@
-import * as CryptoJS from 'crypto-js'
-import * as blake from './libs/blake2b'
-import base58 from './libs/base58'
+import * as CryptoJS from 'crypto-js';
+import * as blake from './libs/blake2b';
+import base58 from './libs/base58';
 import * as nacl from 'tweetnacl';
 
 export const libs = {
@@ -17,7 +17,7 @@ export function buildAddress(publicKeyBytes: Uint8Array, chainId: string = 'L'):
   const publicKeyHashPart = hashChain(publicKeyBytes).slice(0, 20);
   const rawAddress = concat(prefix, publicKeyHashPart);
   const addressHash = Uint8Array.from(hashChain(rawAddress).slice(0, 4));
-  return base58.encode(concat(rawAddress, addressHash))
+  return base58.encode(concat(rawAddress, addressHash));
 }
 
 export function buildDerivedAddress(publicKeyBytes: Uint8Array, secret: Uint8Array, chainId: string = 'L'): string {
@@ -25,30 +25,30 @@ export function buildDerivedAddress(publicKeyBytes: Uint8Array, secret: Uint8Arr
   const publicKeyHashPart = hashChainHmac(publicKeyBytes, secret).slice(0, 20);
   const rawAddress = concat(prefix, publicKeyHashPart);
   const addressHash = Uint8Array.from(hashChain(rawAddress).slice(0, 4));
-  return base58.encode(concat(rawAddress, addressHash))
+  return base58.encode(concat(rawAddress, addressHash));
 }
 
 export function buildSeedHash(seedBytes: Uint8Array, nonce?: number): Uint8Array {
-  const nonceArray = [0,0,0,0];
+  const nonceArray = [0, 0, 0, 0];
   if (nonce && nonce > 0){
     let remainder = nonce;
     for (let i = 3; i >= 0; i--){
       nonceArray[3-i] = Math.floor(remainder / 2 ** (i*8));
-      remainder = remainder % 2 ** (i*8)
+      remainder = remainder % 2 ** (i*8);
     }
   }
   const seedBytesWithNonce = concat(nonceArray, seedBytes);
   const seedHash = hashChain(seedBytesWithNonce);
-  return sha256(seedHash)
+  return sha256(seedHash);
 }
 
 function byteArrayToWordArrayEx(arr: Uint8Array) {
   const len = arr.length;
   const words: any = [];
   for (let i = 0; i < len; i++) {
-    words[i >>> 2] |= (arr[i] & 0xff) << (24 - (i % 4) * 8)
+    words[i >>> 2] |= (arr[i] & 0xff) << (24 - (i % 4) * 8);
   }
-  return (CryptoJS.lib.WordArray.create as any)(words, len)
+  return (CryptoJS.lib.WordArray.create as any)(words, len);
 }
 
 function wordArrayToByteArrayEx(wordArray: any) {
@@ -60,14 +60,14 @@ function wordArrayToByteArrayEx(wordArray: any) {
     u8[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
   }
 
-  return u8
+  return u8;
 }
 
 export const stringToUint8Array = (str: string) =>
   Uint8Array.from([...unescape(encodeURIComponent(str))].map(c => c.charCodeAt(0)));
 
-export type PUBLIC_KEY_TYPES = string | PublicKey | Uint8Array
-export type Option<T> = T | null | undefined
+export type PUBLIC_KEY_TYPES = string | PublicKey | Uint8Array;
+export type Option<T> = T | null | undefined;
 
 export const publicKeyToString = (pk: PUBLIC_KEY_TYPES) =>
   typeof pk === 'string' ? pk : (pk instanceof Uint8Array ? base58encode(pk) : pk.public);
@@ -85,7 +85,7 @@ export function sha256(input: Uint8Array): Uint8Array {
   const wordArray = byteArrayToWordArrayEx(input);
   const resultWordArray = CryptoJS.SHA256(wordArray);
 
-  return wordArrayToByteArrayEx(resultWordArray)
+  return wordArrayToByteArrayEx(resultWordArray);
 }
 
 export function sha256Hmac(input: Uint8Array, secret: Uint8Array): Uint8Array {
@@ -93,7 +93,7 @@ export function sha256Hmac(input: Uint8Array, secret: Uint8Array): Uint8Array {
   const secretWordArray = byteArrayToWordArrayEx(secret);
   const resultWordArray = CryptoJS.HmacSHA256(wordArray, secretWordArray);
 
-  return wordArrayToByteArrayEx(resultWordArray)
+  return wordArrayToByteArrayEx(resultWordArray);
 }
 
 function hashChain(input: Uint8Array): Uint8Array {
@@ -121,7 +121,7 @@ export interface PrivateKey {
   private: string
 }
 
-export type KeyPair = PublicKey & PrivateKey
+export type KeyPair = PublicKey & PrivateKey;
 
 export const keyPairFromSeedHash = (seedHash: string): KeyPair => {
   const bytes = sha256(base58.decode(seedHash));
@@ -129,7 +129,7 @@ export const keyPairFromSeedHash = (seedHash: string): KeyPair => {
   return {
     private: base58.encode(keys.secretKey),
     public: base58.encode(keys.publicKey)
-  }
+  };
 }
 
 export const keyPair = (seed: string, nonce: number = 0): KeyPair => {
@@ -139,7 +139,7 @@ export const keyPair = (seed: string, nonce: number = 0): KeyPair => {
   return {
     private: base58.encode(keys.secretKey),
     public: base58.encode(keys.publicKey)
-  }
+  };
 };
 
 export const publicKey = (seed: string, nonce: number = 0): string =>
@@ -161,10 +161,8 @@ export const signBytes = (bytes: Uint8Array, seed: string): string =>
 
 export const verifySignature = (publicKey: string, bytes: Uint8Array, signature: string): boolean => {
   const signatureBytes = base58.decode(signature);
-  return (
-    signatureBytes.length == SIGNATURE_LENGTH &&
-    nacl.sign.detached.verify(bytes, signatureBytes, base58.decode(publicKey))
-  )
+  return signatureBytes.length == SIGNATURE_LENGTH &&
+    nacl.sign.detached.verify(bytes, signatureBytes, base58.decode(publicKey));
 };
 
 export function arraysEqual(a: any[] | Uint8Array, b: any[] | Uint8Array): boolean {
@@ -172,9 +170,11 @@ export function arraysEqual(a: any[] | Uint8Array, b: any[] | Uint8Array): boole
   if (a == null || b == null) return false;
   if (a.length != b.length) return false;
 
-  for (var i = 0; i < a.length; ++i)
+  for (var i = 0; i < a.length; ++i) {
     if (a[i] !== b[i]) return false;
-  return true
+  }
+
+  return true;
 }
 
 export const hashBytes = (bytes: Uint8Array) => base58.encode(blake2b(bytes));
@@ -182,7 +182,7 @@ export const hashBytes = (bytes: Uint8Array) => base58.encode(blake2b(bytes));
 export const signWithPrivateKey = (dataBytes: Uint8Array, privateKey: string): string => {
   const privateKeyBytes = base58.decode(privateKey);
   const signature = nacl.sign.detached(dataBytes, privateKeyBytes);
-  return base58.encode(signature)
+  return base58.encode(signature);
 };
 
 function nodeRandom(count: any, options: any) {
@@ -197,11 +197,11 @@ function nodeRandom(count: any, options: any) {
     case 'Uint8Array':
       const arr = new Uint8Array(count);
       for (let i = 0; i < count; ++i) {
-        arr[i] = buf.readUInt8(i)
+        arr[i] = buf.readUInt8(i);
       }
       return arr;
     default:
-      throw new Error(options.type + ' is unsupported.')
+      throw new Error(options.type + ' is unsupported.');
   }
 }
 
@@ -215,15 +215,15 @@ function browserRandom(count: any, options: any) {
       return [].slice.call(nativeArr);
     case 'Buffer':
       try {
-        const b = new Buffer(1)
+        const b = new Buffer(1);
       } catch (e) {
-        throw new Error('Buffer not supported in this environment. Use Node.js or Browserify for browser support.')
+        throw new Error('Buffer not supported in this environment. Use Node.js or Browserify for browser support.');
       }
       return new Buffer(nativeArr);
     case 'Uint8Array':
       return nativeArr;
     default:
-      throw new Error(options.type + ' is unsupported.')
+      throw new Error(options.type + ' is unsupported.');
   }
 }
 
@@ -235,18 +235,18 @@ function secureRandom(count: any, options: any) {
   options = options || {type: 'Array'};
 
   if (isBrowser) {
-    return browserRandom(count, options)
+    return browserRandom(count, options);
   } else if (isNode) {
-    return nodeRandom(count, options)
+    return nodeRandom(count, options);
   } else if (isJest) {
-    return nodeRandom(count, options)
+    return nodeRandom(count, options);
   }else {
     throw new Error('Your environment is not defined');
   }
 }
 
 export function randomUint8Array(length: number): Uint8Array {
-  return secureRandom(length, {type: 'Uint8Array'})
+  return secureRandom(length, {type: 'Uint8Array'});
 }
 
 
@@ -287,8 +287,9 @@ export function hexStringToByteArray(str: string) {
     ++i;
   }
 
-  for (; i < str.length - 1; i += 2)
+  for (; i < str.length - 1; i += 2) {
     bytes.push((charToNibble[str.charAt(i)] << 4) + charToNibble[str.charAt(i + 1)]);
+  }
 
   return bytes;
 }
