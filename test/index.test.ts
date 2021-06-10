@@ -10,6 +10,7 @@ import {
   keyPairFromSeedHash,
   chainIdOf,
   deriveAddress,
+  convertED2KeyToX2,
 } from '../src'
 
 const seed = '1f98af466da54014bdc08bfbaaaf3c67';
@@ -85,4 +86,9 @@ test('deriveAddress', () => {
     '62K',
     'T'
   )).toBe('3N5NJWTgKESneDvrFG7THmeh2Lk74CRJkZT');
+});
+
+test('convertED2KeyToX2', () => {
+  // @todo: check if true
+  expect(convertED2KeyToX2('94cXghv1RRwmEjDM5BS88euGt8mUR1wGmhw4BdakmrYT')).toBe('GJjfZyoA1UaCMW4WpKacaRsSveNgJtg7YRaUthbi9dsW');
 });
