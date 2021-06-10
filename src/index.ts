@@ -1,12 +1,14 @@
 import * as CryptoJS from 'crypto-js';
 import * as blake from './libs/blake2b';
 import base58 from './libs/base58';
+import ed2curve from './libs/ed2curve';
 import * as nacl from 'tweetnacl';
 
 export const libs = {
   CryptoJS,
   blake,
   base58,
+  ed2curve,
 };
 
 export const concat = (...arrays: (Uint8Array | number[])[]): Uint8Array =>
@@ -292,4 +294,13 @@ export function hexStringToByteArray(str: string) {
   }
 
   return bytes;
+}
+
+export function convertED2KeyToX2(publicKey: string): string | null {
+  const decodedPublicKey = base58.decode(publicKey);
+  const convertedPublicKey = ed2curve.convertPublicKey(decodedPublicKey);
+
+  if (!convertedPublicKey) return null
+
+  return base58.encode(convertedPublicKey);
 }
